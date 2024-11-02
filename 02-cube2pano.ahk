@@ -49,7 +49,7 @@ ShowGui() {
         if f {
             SplitPath(f,,, &ext,,,)
             if ext == "" {
-                f := f . ".jpg"
+                f := f . ".png"
             }
             edit_output_file.Text := f
         }
