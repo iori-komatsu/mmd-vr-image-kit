@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>MMD VR画像キット</title>
+    <link rel="stylesheet" type="text/css" href="./docs/style.css">
+  </head>
+  <body>
+
+<div class="heading">
+  <h1>MMD VR画像キット</h1>
+  <p><em>by Iori Komatsu (<a href="https://twitter.com/iori_komatsu" target="_blank">@iori_komatsu</a>)</em></p>
+</div>
+
+<p>これは MMD でVR画像(360度画像、180度画像)を生成するためのキットです。</p>
+
+<p>ここでいうVR画像というのは、以下のように周囲360°の風景が一枚の画像に収められているもののことです。
+これをVR機器で見ると、まるでその場にいるかのように周囲を見渡すことができます。
+</p>
+
+<p><img src="./docs/vr360.jpg" width="600"></p>
+
+<p>MMD で VR 画像を生成するには、カメラの角度や位置を変えながら何度も何度も画像書き出しを行う必要があり、とても面倒です。
+また、出力された画像をうまく結合してパノラマ画像にする作業も慣れてないと大変です。
+このキットは面倒な作業を自動化し、ある程度簡単な操作だけで VR 画像を作れるようにしたものです。
+</p>
+<p>
+なお、このキットでは動画は出力できません。
+</p>
+
+<h2 id="prerequisite">動作に必要なもの</h2>
+
+<p>
+このキットを動かすには <a href="https://www.autohotkey.com/">AutoHotKey</a> の <strong>v2</strong> が必要です。
+あらかじめダウンロードしてインストールしておいてください。
+</p>
+<p>
+※ AutoHotKey は Windows 用のオートメーションツールです。
+このキットでは MMD を自動的に操作したり、パラメータ設定用ダイアログを出したりするのに使っています。
+</p>
+
+<p>また、OS が Windows 10 以上でないと多分動作しません。</p>
+
+<h2 id="how_to_use">使い方</h2>
+
+<h3>1. 出力サイズの変更</h3>
+<p>
+    "表示"→"出力サイズの変更" で画面サイズを 3072×3072 とかに変更します。
+    <strong>幅と高さは必ず同じ数に揃えてください</strong>。
+    ピクセル数は必ずしも 3072px でなくても構いませんが、ある程度大きなサイズにしておくことをおすすめします。
+</p>
+<p><img src="./docs/change_screen_size.png"></p>
+
+<h3>2. カメラの設定</h3>
+
+<ol type="i">
+    <li><strong>視野角の変更</strong><br>
+        カメラの視野角をぴったり 90° に設定してください。<br>
+        <img src="./docs/change_fov.png">
+    </li>
+    <li><strong>カメラ位置・角度・距離の初期化</strong><br>
+        カメラを選択して、カメラ中心の座標・角度および距離を全て 0 に設定してください。
+        <img src="./docs/reset_camera_props.png" width="600">
+    </li>
+    <li><strong>カメラ設定用モデルをロード</strong><br>
+        このキットに同梱している "CameraPos.pmd" と "CameraIPD.pmx" を MMD にロードしてください。
+    </li>
+    <li><strong>外部親の設定 その1</strong><br>
+        CameraPos の外部親に CameraIPD を設定してください。<br>
+        <img src="./docs/set_camera_pos_parent.png" width="600">
+    </li>
+    <li><strong>外部親の設定 その2</strong><br>
+        カメラの "ボーン追従" に CameraPos を設定してください。<br>
+        <img src="./docs/set_camera_parent.png">
+    </li>
+    <li><strong>CameraPos を設定する</strong><br>
+        CameraPos を移動させて撮影したい場所が映るようにしてください。
+        "視点" パネルの "追従" ボタンを ON にしておくとリアルタイムにカメラが追従してくれるのでやりやすいと思います。
+    </li>
+</ol>
+
+<p>これで MMD の設定は完了ですが、次の自動操作で使うので MMD はまだ閉じないでください。</p>
+
+<h3>3. 画像の書き出し</h3>
+
+<p>このキットに同梱されている "01-mmd-cubemap.ahk" をダブルクリックしてください。
+AutoHotKey が正しくインストールされていれば以下のようなダイアログが出るはずです。</p>
+
+<p><img src="./docs/01-mmd-cubemap.png" width="600"></p>
+
+<p>出力したい画像にあわせて各種設定を調整してください。
+よくわからなければデフォルトのままで大丈夫です。</p>
+
+<p>設定が完了したら "書き出し開始！" を押してください。
+MMD が自動的に操作され、画像が書き出されています。
+書き出される画像の枚数はデフォルト設定だと 12 枚です。
+</p>
+
+<h3>4. VR画像の作成</h3>
+
+<p>このキットに同梱されている "02-cube2pano.ahk" をダブルクリックしてください。
+以下のようなダイアログが出るはずです。</p>
+
+<p><img src="./docs/02-cube2pano.png" width="600"></p>
+
+<p>まず "入力画像" に3番の手順で出力された画像のうちの一枚をどれでもいいので指定してください。
+残りの画像はファイル名の命名規則を利用して自動的にロードされます。
+(ファイル名を変更してしまうとロードできなくなるので注意してください)
+</p>
+
+<p>次に出力するファイル名を指定してください。</p>
+
+<p>※ 出力画像の拡張子によって画像のフォーマットが自動的に選ばれます。
+つまり拡張子を ".jpg" にすると JPEG 画像が、".png" にすると PNG 画像が出力されます。
+</p>
+
+<p>残りの設定はわからなければデフォルトのままで大丈夫です。</p>
+
+<p>最後に "生成！" ボタンを押すと VR 画像が生成されます。お疲れ様でした！</p>
+
+  </body>
+</html>
