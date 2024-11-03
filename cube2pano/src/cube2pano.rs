@@ -2,7 +2,7 @@ use std::f32::consts::PI;
 
 use anyhow::bail;
 use glam::{vec2, vec3, Vec3};
-use image::{DynamicImage, GenericImage, GenericImageView, ImageBuffer, Pixel, RgbImage};
+use image::{DynamicImage, GenericImage, ImageBuffer, Pixel, RgbImage};
 
 pub struct Direction {
     pub name: &'static str,
@@ -118,9 +118,9 @@ pub fn make_monaural_vr_image(images: &[DynamicImage]) -> anyhow::Result<RgbImag
             }
         };
 
-        let x_in = ((point.x + 1.0) / 2.0 * hf) as u32;
-        let y_in = ((point.y + 1.0) / 2.0 * hf) as u32;
-        let rgba = images[idx].get_pixel(x_in.clamp(0, h - 1), y_in.clamp(0, h - 1));
+        let x_in = ((point.x + 1.0) / 2.0 * hf).clamp(0.0, hf - 1.00001);
+        let y_in = ((point.y + 1.0) / 2.0 * hf).clamp(0.0, hf - 1.00001);
+        let rgba = image::imageops::interpolate_bilinear(&images[idx], x_in, y_in).unwrap();
         rgba.to_rgb()
     });
     Ok(output)
