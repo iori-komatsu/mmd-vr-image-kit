@@ -1,5 +1,12 @@
 #Requires AutoHotkey v2.0
 
+; ControlChooseIndex や ControlChooseString がタイムアウトする場合はこの値を増やしてください。
+delay_after_recording := 3000 
+
+; スクリプトの挙動が安定しないときはこの値を増やしてみてください。
+delay_short := 250
+delay_medium := 500
+
 MMDExportCubemap(output_dir, file_prefix, image_format, fov, is_stereo, ipd_model, ipd_mm) {
     ; MMDの単位で表したIPD
     ; 1MMD単位 = 80mm
@@ -41,7 +48,7 @@ MMDExportCubemap(output_dir, file_prefix, image_format, fov, is_stereo, ipd_mode
         ; IPD を設定
         if lr != "N" {
             ControlChooseString(ipd_model, "ComboBox3")
-            Sleep(250)
+            Sleep(delay_short)
             if lr == "L" {
                 sign := -1.0
             } else {
@@ -49,40 +56,40 @@ MMDExportCubemap(output_dir, file_prefix, image_format, fov, is_stereo, ipd_mode
             }
             ControlSetText(String(sign * ipd_mmd / 2.0), "Edit26") ; ボーン位置の X
             ControlSend("{Enter}", "Edit26")
-            Sleep(250)
+            Sleep(delay_short)
         }
 
         for params in table {
             ; カメラの角度を設定
             ControlChooseIndex(1, "ComboBox3") ; "カメラ・照明・アクセサリ" を選択
-            Sleep(250)
+            Sleep(delay_short)
             ControlSetText(params["rx"], "Edit29") ; 角度X
             ControlSend("{Enter}", "Edit29")
-            Sleep(250)
+            Sleep(delay_short)
             ControlSetText(params["ry"], "Edit30") ; 角度Y
             ControlSend("{Enter}", "Edit30")
-            Sleep(250)
+            Sleep(delay_short)
             ControlSetText(params["rz"], "Edit31") ; 角度Z
             ControlSend("{Enter}", "Edit31")
-            Sleep(250)
+            Sleep(delay_short)
 
             ; 画像を保存する
             MenuSelect("", "", "1&", "7&") ; [ファイル] -> [画像ファイルに出力]
-            Sleep(500)
+            Sleep(delay_medium)
             WinWait("ahk_class #32770") ; 保存ダイアログを待つ
             file_name := MakeFileName(lr, params["name"])
             ControlSetText(file_name, "Edit1") ; ファイル名入力
             ControlSend("{Enter}")
-            Sleep(500)
+            Sleep(delay_short)
             while WinExist("名前を付けて保存の確認") {
-                ControlClick("はい(&Y)")
-                Sleep(1500)
+                ControlClick("Button1",,,,, "NA")
+                Sleep(delay_short)
             }
             ; 録画画面が出てくるまで待つ
-            WinWait("ahk_class RecWindow",, 30)
+            WinWait("ahk_class RecWindow",, 5)
             ; 録画画面が消えるまで待つ
             while WinExist("ahk_class RecWindow") {
-                Sleep(500)
+                Sleep(delay_medium)
             }
 
             ; メインウィンドウを選択
@@ -93,7 +100,7 @@ MMDExportCubemap(output_dir, file_prefix, image_format, fov, is_stereo, ipd_mode
             ; MMD がメッセージを受け付けられるようになるまで待つ
             SendMessage(0,,,,,,,, 60000) ; Send WM_NULL
             ; これでも稀にタイムアウトするのでもうちょっと待つ
-            Sleep(3000)
+            Sleep(delay_after_recording)
         }
     }
 
