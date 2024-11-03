@@ -115,12 +115,12 @@ ShowGui() {
     setting_dialog.AddButton("w40 x+8", "...").OnEvent("Click", SetOutputDir)
 
     ; ファイル名の接頭辞
-    setting_dialog.AddText("xm0", 'ファイル名の接頭辞 (※ これの後ろに "L_front.jpg" のような名前が追加されて保存されます):')
+    setting_dialog.AddText("xm0", 'ファイル名の接頭辞 (※ これの後ろに "L_front.png" のような名前が追加されて保存されます):')
     edit_file_prefix := setting_dialog.AddEdit("xm0 w400", "cubemap_")
 
     ; ファイル形式
     setting_dialog.AddText("xm0 y+12", "画像のフォーマット: ")
-    combo_format := setting_dialog.AddComboBox("x+8 Choose1 w60", ["jpg", "png"])
+    combo_format := setting_dialog.AddComboBox("x+8 Choose1 w60", ["png", "jpg"])
 
     ; 視野角
     setting_dialog.AddText("xm0", "VR360 or VR180: ")
