@@ -2,7 +2,7 @@ mod cube2pano;
 
 use anyhow::{bail, Context};
 use image::ImageReader;
-use std::path::{Path, PathBuf};
+use std::{ffi::OsStr, fs::File, path::{Path, PathBuf}};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -52,6 +52,14 @@ fn get_file_prefix_of_stereo_image(file_stem: &str) -> anyhow::Result<&str> {
         }
     }
     bail!("The file name of the input image does not follow the naming convention.");
+}
+
+fn is_jpeg(file_name: &Path) -> bool {
+    let Some(ext) = file_name.extension() else {
+        return false;
+    };
+    let ext = ext.to_ascii_lowercase();
+    ext == OsStr::new("jpg") || ext == OsStr::new("jpeg")
 }
 
 fn main() -> anyhow::Result<()> {
@@ -113,7 +121,14 @@ fn main() -> anyhow::Result<()> {
     };
 
     // 画像を保存
-    output.save(&opt.output)?;
+    if is_jpeg(&opt.output) {
+        // image crate のデフォルトでは JPEG のクオリティが低すぎるのでクオリティを指定して書き出す
+        let file = File::create(&opt.output)?;
+        let mut encoder = image::codecs::jpeg::JpegEncoder::new_with_quality(file, 95);
+        encoder.encode_image(&output)?;
+    } else {
+        output.save(&opt.output)?;
+    }
     eprintln!("Saved: {}", opt.output.to_string_lossy());
 
     Ok(())
